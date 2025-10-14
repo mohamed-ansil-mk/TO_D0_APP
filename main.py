@@ -1,3 +1,11 @@
+#for hmtl
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
+
+
+
+
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 import models, schemas
@@ -65,3 +73,14 @@ def delete_todo(todo_id:int, db:Session = Depends(get_db)):
     db.commit()
     return {"messege":"To do deleted succesfully" }
 
+
+# for html
+
+# Serve static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Serve index.html directly
+@app.get("/")
+def read_root():
+    file_path = os.path.join("static", "index.html")
+    return FileResponse(file_path)
