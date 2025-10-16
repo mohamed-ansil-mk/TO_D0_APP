@@ -5,7 +5,7 @@ class TodoBase(BaseModel):
     description:str
 
 class TodoCreate(TodoBase):
-    pass
+    completed: bool = False
 
 class TodoUpdate(TodoBase):
     title:str | None = None
@@ -16,5 +16,5 @@ class Todoresponse(TodoBase):
     id:int
     completed:bool
 
-    class config:
+    class Config:
         orm_mode = True

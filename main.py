@@ -20,17 +20,19 @@ def get_db():
 
 # Create a new task
 @app.post("/tools/", response_model=schemas.Todoresponse)
-def create_todo(todo: schemas.Todocreate, db: Session = Depends(get_db)):
+def create_todo(todo: schemas.TodoCreate, db: Session = Depends(get_db)):
     db_todo = models.Todo(title=todo.title, description=todo.description)
     db.add(db_todo)
     db.commit()
     db.refresh(db_todo)
     return db_todo
 
+
 # Get all tasks
 @app.get("/tools/", response_model=list[schemas.Todoresponse])
 def read_todos(db: Session = Depends(get_db)):
     return db.query(models.Todo).all()
+
 
 # Get a task by ID
 @app.get("/tools/{todo_id}", response_model=schemas.Todoresponse)

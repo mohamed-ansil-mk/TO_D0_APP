@@ -49,6 +49,11 @@
       text-decoration: line-through;
       color: gray;
     }
+    .actions button {
+      margin-left: 6px;
+      background: #eee;
+      color: #333;
+    }
   </style>
 </head>
 <body>
@@ -62,10 +67,10 @@
   <ul id="todo-list"></ul>
 
   <script>
-    const apiBase = "http://127.0.0.1:8001";
+    const apiBase = "http://127.0.0.1:8003/tools/";
 
     async function fetchTodos() {
-      const res = await fetch(`${apiBase}/todos/`);
+      const res = await fetch(apiBase);
       const todos = await res.json();
       const list = document.getElementById("todo-list");
       list.innerHTML = "";
@@ -75,11 +80,29 @@
         li.textContent = todo.title;
         if (todo.completed) li.classList.add("completed");
 
+        // Action buttons
+        const actions = document.createElement("div");
+        actions.classList.add("actions");
+
+        // ✅ Complete / Undo button
+        const completeBtn = document.createElement("button");
+        completeBtn.textContent = todo.completed ? "↩️ Undo" : "✅ Done";
+        completeBtn.onclick = () => toggleComplete(todo.id, !todo.completed);
+        actions.appendChild(completeBtn);
+
+        // ✏️ Edit button
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "✏️ Edit";
+        editBtn.onclick = () => editTodo(todo);
+        actions.appendChild(editBtn);
+
+        // ❌ Delete button
         const delBtn = document.createElement("button");
         delBtn.textContent = "❌";
         delBtn.onclick = () => deleteTodo(todo.id);
+        actions.appendChild(delBtn);
 
-        li.appendChild(delBtn);
+        li.appendChild(actions);
         list.appendChild(li);
       });
     }
@@ -88,10 +111,10 @@
       const title = document.getElementById("title").value.trim();
       if (!title) return alert("Please enter a task");
 
-      await fetch(`${apiBase}/todos/`, {
+      await fetch(apiBase, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: title, description: "" }),
+        body: JSON.stringify({ title, description: "", completed: false }),
       });
 
       document.getElementById("title").value = "";
@@ -99,8 +122,29 @@
     }
 
     async function deleteTodo(id) {
-      await fetch(`${apiBase}/todos/${id}`, { method: "DELETE" });
+      await fetch(`${apiBase}${id}`, { method: "DELETE" });
       fetchTodos();
+    }
+
+    async function toggleComplete(id, completed) {
+      await fetch(`${apiBase}${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ completed }),
+      });
+      fetchTodos();
+    }
+
+    async function editTodo(todo) {
+      const newTitle = prompt("Edit your task:", todo.title);
+      if (newTitle && newTitle.trim() !== "") {
+        await fetch(`${apiBase}${todo.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: newTitle }),
+        });
+        fetchTodos();
+      }
     }
 
     fetchTodos();
