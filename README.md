@@ -36,3 +36,6 @@ This project allows you to **add, update, complete, and delete tasks** with a si
 
 -Click ❌ Delete to remove a task
 
+##Running the Application
+
+uvicorn main:app --reload --port 8000
