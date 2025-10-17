@@ -26,7 +26,7 @@ This project allows you to **add, update, complete, and delete tasks** with a si
 
 ---
 
-##Usage
+## Usage
 
 -Type a task title in the input box and click Add
 
@@ -36,6 +36,6 @@ This project allows you to **add, update, complete, and delete tasks** with a si
 
 -Click ❌ Delete to remove a task
 
-##Running the Application
+## Running the Application
 
 uvicorn main:app --reload --port 8000
